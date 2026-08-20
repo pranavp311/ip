@@ -43,7 +43,21 @@ public class Kopi {
                 System.out.println("OK, I've marked this task as not done yet:");
                 System.out.println("  " + tasks[taskNumber]);
             } else {
-                tasks[taskCount] = new Task(input);
+                Task task;
+                if (input.startsWith("todo ")) {
+                    task = new Todo(input.substring(5));
+                } else if (input.startsWith("deadline ")) {
+                    int byIndex = input.indexOf(" /by ");
+                    task = new Deadline(input.substring(9, byIndex), input.substring(byIndex + 5));
+                } else if (input.startsWith("event ")) {
+                    int fromIndex = input.indexOf(" /from ");
+                    int toIndex = input.indexOf(" /to ");
+                    task = new Event(input.substring(6, fromIndex),
+                            input.substring(fromIndex + 7, toIndex), input.substring(toIndex + 5));
+                } else {
+                    task = new Task(input);
+                }
+                tasks[taskCount] = task;
                 taskCount++;
                 System.out.println("added: " + tasks[taskCount - 1]);
             }
