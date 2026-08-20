@@ -14,6 +14,10 @@ public class Kopi {
             + "|_|\\_\\___/| .__/|_|\n"
             + "          |_|";
 
+    private enum Command {
+        BYE, LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT
+    }
+
     public static void main(String[] args) {
         System.out.println(LINE);
         System.out.println(BANNER);
@@ -23,37 +27,46 @@ public class Kopi {
 
         Scanner scanner = new Scanner(System.in);
         List<Task> tasks = new ArrayList<>();
+        chat:
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine();
-            if (input.equals("bye")) {
-                break;
-            }
             try {
-                if (input.equals("list")) {
+                Command command = parseCommand(input);
+                switch (command) {
+                case BYE:
+                    break chat;
+                case LIST:
                     System.out.println("Here are the tasks in your list:");
                     for (int i = 0; i < tasks.size(); i++) {
                         System.out.printf("%d. %s%n", i + 1, tasks.get(i));
                     }
-                } else if (input.equals("mark") || input.startsWith("mark ")) {
+                    break;
+                case MARK:
                     int taskNumber = parseTaskNumber(input, "mark", tasks.size());
                     tasks.get(taskNumber).markAsDone();
                     System.out.println("Nice! I've marked this task as done:");
                     System.out.println("  " + tasks.get(taskNumber));
-                } else if (input.equals("unmark") || input.startsWith("unmark ")) {
-                    int taskNumber = parseTaskNumber(input, "unmark", tasks.size());
-                    tasks.get(taskNumber).markAsNotDone();
+                    break;
+                case UNMARK:
+                    int unmarkNumber = parseTaskNumber(input, "unmark", tasks.size());
+                    tasks.get(unmarkNumber).markAsNotDone();
                     System.out.println("OK, I've marked this task as not done yet:");
-                    System.out.println("  " + tasks.get(taskNumber));
-                } else if (input.equals("delete") || input.startsWith("delete ")) {
-                    int taskNumber = parseTaskNumber(input, "delete", tasks.size());
-                    Task removedTask = tasks.remove(taskNumber);
+                    System.out.println("  " + tasks.get(unmarkNumber));
+                    break;
+                case DELETE:
+                    int deleteNumber = parseTaskNumber(input, "delete", tasks.size());
+                    Task removedTask = tasks.remove(deleteNumber);
                     System.out.println("Noted. I've removed this task:");
                     System.out.println("  " + removedTask);
                     System.out.println("Now you have " + tasks.size() + " tasks in the list.");
-                } else {
-                    Task task = parseTask(input);
+                    break;
+                case TODO:
+                case DEADLINE:
+                case EVENT:
+                    Task task = parseTask(input, command);
                     tasks.add(task);
                     System.out.println("added: " + task);
+                    break;
                 }
             } catch (KopiException e) {
                 System.out.println("OOPS!!! " + e.getMessage());
@@ -65,13 +78,31 @@ public class Kopi {
         System.out.println(LINE);
     }
 
-    private static Task parseTask(String input) throws KopiException {
-        if (input.equals("todo") || input.startsWith("todo ")) {
+    /**
+     * Extracts a supported command from a line of user input.
+     */
+    private static Command parseCommand(String input) throws KopiException {
+        if (input.isBlank()) {
+            throw new KopiException("I don't understand an empty command.");
+        }
+        String commandWord = input.strip().split("\\s+", 2)[0].toUpperCase();
+        try {
+            return Command.valueOf(commandWord);
+        } catch (IllegalArgumentException e) {
+            throw new KopiException("I don't understand that command.");
+        }
+    }
+
+    /**
+     * Creates a task from a validated task-creation command.
+     */
+    private static Task parseTask(String input, Command command) throws KopiException {
+        if (command == Command.TODO) {
             String description = input.substring(4).trim();
             requireText(description, "A todo needs a description.");
             return new Todo(description);
         }
-        if (input.equals("deadline") || input.startsWith("deadline ")) {
+        if (command == Command.DEADLINE) {
             int byIndex = input.indexOf(" /by ");
             if (byIndex < 0) {
                 throw new KopiException("Use: deadline DESCRIPTION /by TIME");
@@ -82,7 +113,7 @@ public class Kopi {
             requireText(by, "A deadline needs a time after /by.");
             return new Deadline(description, by);
         }
-        if (input.equals("event") || input.startsWith("event ")) {
+        if (command == Command.EVENT) {
             int fromIndex = input.indexOf(" /from ");
             int toIndex = input.indexOf(" /to ");
             if (fromIndex < 0 || toIndex < fromIndex) {
@@ -96,9 +127,12 @@ public class Kopi {
             requireText(to, "An event needs an end time after /to.");
             return new Event(description, from, to);
         }
-        throw new KopiException("I don't understand that command.");
+        throw new KopiException("That command cannot create a task.");
     }
 
+    /**
+     * Converts a one-based task number into a valid list index.
+     */
     private static int parseTaskNumber(String input, String command, int taskCount) throws KopiException {
         String numberText = input.substring(command.length()).trim();
         int taskNumber;
