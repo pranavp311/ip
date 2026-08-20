@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 /**
  * A small personal-assistant chatbot.
  */
@@ -16,6 +18,17 @@ public class Kopi {
         System.out.println("Hello! I'm Kopi.");
         System.out.println("What can I do for you?");
         System.out.println(LINE);
+
+        Scanner scanner = new Scanner(System.in);
+        while (scanner.hasNextLine()) {
+            String input = scanner.nextLine();
+            if (input.equals("bye")) {
+                break;
+            }
+            System.out.println(input);
+            System.out.println(LINE);
+        }
+
         System.out.println("Bye. Hope to see you again soon!");
         System.out.println(LINE);
     }
