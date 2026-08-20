@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -20,8 +22,7 @@ public class Kopi {
         System.out.println(LINE);
 
         Scanner scanner = new Scanner(System.in);
-        Task[] tasks = new Task[100];
-        int taskCount = 0;
+        List<Task> tasks = new ArrayList<>();
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine();
             if (input.equals("bye")) {
@@ -30,26 +31,28 @@ public class Kopi {
             try {
                 if (input.equals("list")) {
                     System.out.println("Here are the tasks in your list:");
-                    for (int i = 0; i < taskCount; i++) {
-                        System.out.printf("%d. %s%n", i + 1, tasks[i]);
+                    for (int i = 0; i < tasks.size(); i++) {
+                        System.out.printf("%d. %s%n", i + 1, tasks.get(i));
                     }
                 } else if (input.equals("mark") || input.startsWith("mark ")) {
-                    int taskNumber = parseTaskNumber(input, "mark", taskCount);
-                    tasks[taskNumber].markAsDone();
+                    int taskNumber = parseTaskNumber(input, "mark", tasks.size());
+                    tasks.get(taskNumber).markAsDone();
                     System.out.println("Nice! I've marked this task as done:");
-                    System.out.println("  " + tasks[taskNumber]);
+                    System.out.println("  " + tasks.get(taskNumber));
                 } else if (input.equals("unmark") || input.startsWith("unmark ")) {
-                    int taskNumber = parseTaskNumber(input, "unmark", taskCount);
-                    tasks[taskNumber].markAsNotDone();
+                    int taskNumber = parseTaskNumber(input, "unmark", tasks.size());
+                    tasks.get(taskNumber).markAsNotDone();
                     System.out.println("OK, I've marked this task as not done yet:");
-                    System.out.println("  " + tasks[taskNumber]);
+                    System.out.println("  " + tasks.get(taskNumber));
+                } else if (input.equals("delete") || input.startsWith("delete ")) {
+                    int taskNumber = parseTaskNumber(input, "delete", tasks.size());
+                    Task removedTask = tasks.remove(taskNumber);
+                    System.out.println("Noted. I've removed this task:");
+                    System.out.println("  " + removedTask);
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
                 } else {
-                    if (taskCount == tasks.length) {
-                        throw new KopiException("The task list is full.");
-                    }
                     Task task = parseTask(input);
-                    tasks[taskCount] = task;
-                    taskCount++;
+                    tasks.add(task);
                     System.out.println("added: " + task);
                 }
             } catch (KopiException e) {
