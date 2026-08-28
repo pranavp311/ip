@@ -1,0 +1,91 @@
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+
+/** Loads tasks from disk and saves tasks to disk. */
+public class Storage {
+    private final Path filePath;
+
+    /** Creates storage backed by the given data file. */
+    public Storage(Path filePath) {
+        this.filePath = filePath;
+    }
+
+    /** Loads tasks, or returns an empty list if the data file does not exist. */
+    public List<Task> load() throws KopiException {
+        List<Task> tasks = new ArrayList<>();
+        if (Files.notExists(filePath)) {
+            return tasks;
+        }
+        try {
+            for (String line : Files.readAllLines(filePath, StandardCharsets.UTF_8)) {
+                tasks.add(parseTask(line));
+            }
+            return tasks;
+        } catch (IOException e) {
+            throw new KopiException("I couldn't load tasks from " + filePath + ".");
+        }
+    }
+
+    /** Saves all tasks, creating the data directory when necessary. */
+    public void save(List<Task> tasks) throws KopiException {
+        try {
+            Path parent = filePath.getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
+            List<String> lines = tasks.stream().map(Task::toDataString).toList();
+            Files.write(filePath, lines, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new KopiException("I couldn't save tasks to " + filePath + ".");
+        }
+    }
+
+    /** Converts one line from the data file back into a task. */
+    private Task parseTask(String line) throws KopiException {
+        String[] fields = line.split(" \\| ", -1);
+        if (fields.length < 3) {
+            throw new KopiException("The data file contains an invalid task.");
+        }
+
+        Task task;
+        try {
+            switch (fields[0]) {
+            case "T":
+                requireFieldCount(fields, 3, "todo");
+                task = new Todo(fields[2]);
+                break;
+            case "D":
+                requireFieldCount(fields, 4, "deadline");
+                task = new Deadline(fields[2], LocalDate.parse(fields[3]));
+                break;
+            case "E":
+                requireFieldCount(fields, 5, "event");
+                task = new Event(fields[2], LocalDate.parse(fields[3]), LocalDate.parse(fields[4]));
+                break;
+            default:
+                throw new KopiException("The data file contains an unknown task type.");
+            }
+        } catch (DateTimeParseException e) {
+            throw new KopiException("The data file contains an invalid date.");
+        }
+
+        if (fields[1].equals("1")) {
+            task.markAsDone();
+        } else if (!fields[1].equals("0")) {
+            throw new KopiException("The data file contains an invalid task status.");
+        }
+        return task;
+    }
+
+    private void requireFieldCount(String[] fields, int expected, String taskType) throws KopiException {
+        if (fields.length != expected) {
+            throw new KopiException("The data file contains an invalid " + taskType + ".");
+        }
+    }
+}
