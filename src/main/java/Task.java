@@ -1,7 +1,7 @@
 /**
  * Represents a task and whether it has been completed.
  */
-public class Task {
+public abstract class Task {
     protected final String description;
     protected boolean isDone;
 
@@ -27,6 +27,9 @@ public class Task {
     public String getStatusIcon() {
         return isDone ? "X" : " ";
     }
+
+    /** Returns this task in the format used by the data file. */
+    public abstract String toDataString();
 
     @Override
     public String toString() {

@@ -1,3 +1,7 @@
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -6,6 +10,7 @@ import java.util.Scanner;
  * A small personal-assistant chatbot.
  */
 public class Kopi {
+    private static final Path DATA_FILE = Path.of("data", "kopi.txt");
     private static final String LINE = "____________________________________________________________";
     private static final String BANNER = " _  __           _\n"
             + "| |/ /___  _ __ (_)\n"
@@ -26,7 +31,13 @@ public class Kopi {
         System.out.println(LINE);
 
         Scanner scanner = new Scanner(System.in);
-        List<Task> tasks = new ArrayList<>();
+        List<Task> tasks;
+        try {
+            tasks = loadTasks();
+        } catch (KopiException e) {
+            System.out.println("OOPS!!! " + e.getMessage());
+            tasks = new ArrayList<>();
+        }
         chat:
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine();
@@ -44,18 +55,21 @@ public class Kopi {
                 case MARK:
                     int taskNumber = parseTaskNumber(input, "mark", tasks.size());
                     tasks.get(taskNumber).markAsDone();
+                    saveTasks(tasks);
                     System.out.println("Nice! I've marked this task as done:");
                     System.out.println("  " + tasks.get(taskNumber));
                     break;
                 case UNMARK:
                     int unmarkNumber = parseTaskNumber(input, "unmark", tasks.size());
                     tasks.get(unmarkNumber).markAsNotDone();
+                    saveTasks(tasks);
                     System.out.println("OK, I've marked this task as not done yet:");
                     System.out.println("  " + tasks.get(unmarkNumber));
                     break;
                 case DELETE:
                     int deleteNumber = parseTaskNumber(input, "delete", tasks.size());
                     Task removedTask = tasks.remove(deleteNumber);
+                    saveTasks(tasks);
                     System.out.println("Noted. I've removed this task:");
                     System.out.println("  " + removedTask);
                     System.out.println("Now you have " + tasks.size() + " tasks in the list.");
@@ -65,6 +79,7 @@ public class Kopi {
                 case EVENT:
                     Task task = parseTask(input, command);
                     tasks.add(task);
+                    saveTasks(tasks);
                     System.out.println("added: " + task);
                     break;
                 }
@@ -151,5 +166,71 @@ public class Kopi {
         if (text.isEmpty()) {
             throw new KopiException(message);
         }
+    }
+
+    /** Loads tasks from the data file, or returns an empty list if it does not exist. */
+    private static List<Task> loadTasks() throws KopiException {
+        List<Task> tasks = new ArrayList<>();
+        if (Files.notExists(DATA_FILE)) {
+            return tasks;
+        }
+        try {
+            for (String line : Files.readAllLines(DATA_FILE, StandardCharsets.UTF_8)) {
+                tasks.add(parseStoredTask(line));
+            }
+            return tasks;
+        } catch (IOException e) {
+            throw new KopiException("I couldn't load tasks from " + DATA_FILE + ".");
+        }
+    }
+
+    /** Saves all tasks, creating the data directory when necessary. */
+    private static void saveTasks(List<Task> tasks) throws KopiException {
+        try {
+            Files.createDirectories(DATA_FILE.getParent());
+            List<String> lines = tasks.stream().map(Task::toDataString).toList();
+            Files.write(DATA_FILE, lines, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new KopiException("I couldn't save tasks to " + DATA_FILE + ".");
+        }
+    }
+
+    /** Converts one line from the data file back into a task. */
+    private static Task parseStoredTask(String line) throws KopiException {
+        String[] fields = line.split(" \\| ", -1);
+        if (fields.length < 3) {
+            throw new KopiException("The data file contains an invalid task.");
+        }
+
+        Task task;
+        switch (fields[0]) {
+        case "T":
+            if (fields.length != 3) {
+                throw new KopiException("The data file contains an invalid todo.");
+            }
+            task = new Todo(fields[2]);
+            break;
+        case "D":
+            if (fields.length != 4) {
+                throw new KopiException("The data file contains an invalid deadline.");
+            }
+            task = new Deadline(fields[2], fields[3]);
+            break;
+        case "E":
+            if (fields.length != 5) {
+                throw new KopiException("The data file contains an invalid event.");
+            }
+            task = new Event(fields[2], fields[3], fields[4]);
+            break;
+        default:
+            throw new KopiException("The data file contains an unknown task type.");
+        }
+
+        if (fields[1].equals("1")) {
+            task.markAsDone();
+        } else if (!fields[1].equals("0")) {
+            throw new KopiException("The data file contains an invalid task status.");
+        }
+        return task;
     }
 }

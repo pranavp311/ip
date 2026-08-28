@@ -8,3 +8,4 @@ The test checks that Kopi can:
 2. Mark and unmark a task.
 3. Delete a task and renumber the remaining list.
 4. Report an unknown command without corrupting the task list.
+5. Save tasks and load them again in a later session.
