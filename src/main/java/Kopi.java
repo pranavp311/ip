@@ -2,6 +2,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -126,7 +128,7 @@ public class Kopi {
             String by = input.substring(byIndex + 5).trim();
             requireText(description, "A deadline needs a description.");
             requireText(by, "A deadline needs a time after /by.");
-            return new Deadline(description, by);
+            return new Deadline(description, parseDate(by));
         }
         if (command == Command.EVENT) {
             int fromIndex = input.indexOf(" /from ");
@@ -140,7 +142,7 @@ public class Kopi {
             requireText(description, "An event needs a description.");
             requireText(from, "An event needs a start time after /from.");
             requireText(to, "An event needs an end time after /to.");
-            return new Event(description, from, to);
+            return new Event(description, parseDate(from), parseDate(to));
         }
         throw new KopiException("That command cannot create a task.");
     }
@@ -165,6 +167,15 @@ public class Kopi {
     private static void requireText(String text, String message) throws KopiException {
         if (text.isEmpty()) {
             throw new KopiException(message);
+        }
+    }
+
+    /** Parses a date in the command format used by Kopi. */
+    private static LocalDate parseDate(String text) throws KopiException {
+        try {
+            return LocalDate.parse(text);
+        } catch (DateTimeParseException e) {
+            throw new KopiException("Use dates in yyyy-MM-dd format.");
         }
     }
 
@@ -214,13 +225,13 @@ public class Kopi {
             if (fields.length != 4) {
                 throw new KopiException("The data file contains an invalid deadline.");
             }
-            task = new Deadline(fields[2], fields[3]);
+            task = new Deadline(fields[2], parseDate(fields[3]));
             break;
         case "E":
             if (fields.length != 5) {
                 throw new KopiException("The data file contains an invalid event.");
             }
-            task = new Event(fields[2], fields[3], fields[4]);
+            task = new Event(fields[2], parseDate(fields[3]), parseDate(fields[4]));
             break;
         default:
             throw new KopiException("The data file contains an unknown task type.");
