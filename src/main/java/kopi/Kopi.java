@@ -1,3 +1,5 @@
+package kopi;
+
 import java.nio.file.Path;
 
 /**

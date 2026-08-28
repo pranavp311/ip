@@ -1,3 +1,5 @@
+package kopi;
+
 import java.io.PrintStream;
 import java.util.Scanner;
 
