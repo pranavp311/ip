@@ -52,6 +52,10 @@ public class Kopi {
             case LIST:
                 ui.showTaskList(tasks);
                 break;
+            case FIND:
+                String keyword = parser.parseKeyword(input, "find");
+                ui.showMatches(tasks.find(keyword));
+                break;
             case MARK:
                 int markIndex = parser.parseTaskNumber(input, "mark", tasks.size());
                 tasks.get(markIndex).markAsDone();
