@@ -33,6 +33,7 @@ public abstract class Task {
     /** Returns this task in the format used by the data file. */
     public abstract String toDataString();
 
+    /** Returns the task's completion state and description for display. */
     @Override
     public String toString() {
         return "[" + getStatusIcon() + "] " + description;
