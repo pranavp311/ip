@@ -30,6 +30,11 @@ public abstract class Task {
         return isDone ? "X" : " ";
     }
 
+    /** Returns this task's description. */
+    public String getDescription() {
+        return description;
+    }
+
     /** Returns this task in the format used by the data file. */
     public abstract String toDataString();
 

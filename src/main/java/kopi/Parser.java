@@ -77,6 +77,13 @@ public class Parser {
         }
     }
 
+    /** Extracts and validates the keyword supplied to a command. */
+    public String parseKeyword(String input, String command) throws KopiException {
+        String keyword = input.substring(command.length()).trim();
+        requireText(keyword, "Give me a keyword to find.");
+        return keyword;
+    }
+
     private void requireText(String text, String message) throws KopiException {
         if (text.isEmpty()) {
             throw new KopiException(message);

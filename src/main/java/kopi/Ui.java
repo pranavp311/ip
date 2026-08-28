@@ -1,6 +1,7 @@
 package kopi;
 
 import java.io.PrintStream;
+import java.util.List;
 import java.util.Scanner;
 
 /** Handles all console input and output. */
@@ -52,6 +53,14 @@ public class Ui {
         output.println("Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
             output.printf("%d. %s%n", i + 1, tasks.get(i));
+        }
+    }
+
+    /** Shows tasks that match a search keyword. */
+    public void showMatches(List<Task> matches) {
+        output.println("Here are the matching tasks in your list:");
+        for (int i = 0; i < matches.size(); i++) {
+            output.printf("%d. %s%n", i + 1, matches.get(i));
         }
     }
 
