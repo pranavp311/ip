@@ -58,20 +58,20 @@ public class Storage {
         Task task;
         try {
             switch (fields[0]) {
-            case "T":
-                requireFieldCount(fields, 3, "todo");
-                task = new Todo(fields[2]);
-                break;
-            case "D":
-                requireFieldCount(fields, 4, "deadline");
-                task = new Deadline(fields[2], LocalDate.parse(fields[3]));
-                break;
-            case "E":
-                requireFieldCount(fields, 5, "event");
-                task = new Event(fields[2], LocalDate.parse(fields[3]), LocalDate.parse(fields[4]));
-                break;
-            default:
-                throw new KopiException("The data file contains an unknown task type.");
+                case "T":
+                    requireFieldCount(fields, 3, "todo");
+                    task = new Todo(fields[2]);
+                    break;
+                case "D":
+                    requireFieldCount(fields, 4, "deadline");
+                    task = new Deadline(fields[2], LocalDate.parse(fields[3]));
+                    break;
+                case "E":
+                    requireFieldCount(fields, 5, "event");
+                    task = new Event(fields[2], LocalDate.parse(fields[3]), LocalDate.parse(fields[4]));
+                    break;
+                default:
+                    throw new KopiException("The data file contains an unknown task type.");
             }
         } catch (DateTimeParseException e) {
             throw new KopiException("The data file contains an invalid date.");

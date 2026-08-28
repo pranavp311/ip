@@ -49,37 +49,39 @@ public class Kopi {
     /** Executes one parsed command. */
     private void execute(Command command, String input) throws KopiException {
         switch (command) {
-        case LIST:
-            ui.showTaskList(tasks);
-            break;
-        case MARK:
-            int markIndex = parser.parseTaskNumber(input, "mark", tasks.size());
-            tasks.get(markIndex).markAsDone();
-            storage.save(tasks.getAll());
-            ui.showMarked(tasks.get(markIndex));
-            break;
-        case UNMARK:
-            int unmarkIndex = parser.parseTaskNumber(input, "unmark", tasks.size());
-            tasks.get(unmarkIndex).markAsNotDone();
-            storage.save(tasks.getAll());
-            ui.showUnmarked(tasks.get(unmarkIndex));
-            break;
-        case DELETE:
-            int deleteIndex = parser.parseTaskNumber(input, "delete", tasks.size());
-            Task removedTask = tasks.delete(deleteIndex);
-            storage.save(tasks.getAll());
-            ui.showDeleted(removedTask, tasks.size());
-            break;
-        case TODO:
-        case DEADLINE:
-        case EVENT:
-            Task task = parser.parseTask(input, command);
-            tasks.add(task);
-            storage.save(tasks.getAll());
-            ui.showAdded(task);
-            break;
-        default:
-            throw new KopiException("I don't understand that command.");
+            case LIST:
+                ui.showTaskList(tasks);
+                break;
+            case MARK:
+                int markIndex = parser.parseTaskNumber(input, "mark", tasks.size());
+                tasks.get(markIndex).markAsDone();
+                storage.save(tasks.getAll());
+                ui.showMarked(tasks.get(markIndex));
+                break;
+            case UNMARK:
+                int unmarkIndex = parser.parseTaskNumber(input, "unmark", tasks.size());
+                tasks.get(unmarkIndex).markAsNotDone();
+                storage.save(tasks.getAll());
+                ui.showUnmarked(tasks.get(unmarkIndex));
+                break;
+            case DELETE:
+                int deleteIndex = parser.parseTaskNumber(input, "delete", tasks.size());
+                Task removedTask = tasks.delete(deleteIndex);
+                storage.save(tasks.getAll());
+                ui.showDeleted(removedTask, tasks.size());
+                break;
+            case TODO:
+                // Fallthrough
+            case DEADLINE:
+                // Fallthrough
+            case EVENT:
+                Task task = parser.parseTask(input, command);
+                tasks.add(task);
+                storage.save(tasks.getAll());
+                ui.showAdded(task);
+                break;
+            default:
+                throw new KopiException("I don't understand that command.");
         }
     }
 
