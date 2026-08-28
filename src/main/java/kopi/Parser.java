@@ -5,6 +5,10 @@ import java.time.format.DateTimeParseException;
 
 /** Interprets user commands and their arguments. */
 public class Parser {
+    /** Creates a parser for Kopi commands. */
+    public Parser() {
+    }
+
     /** Extracts a supported command from a line of user input. */
     public Command parseCommand(String input) throws KopiException {
         if (input.isBlank()) {

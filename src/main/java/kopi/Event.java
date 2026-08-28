@@ -11,17 +11,20 @@ public class Event extends Task {
     private final LocalDate from;
     private final LocalDate to;
 
+    /** Creates an incomplete event with the given description and dates. */
     public Event(String description, LocalDate from, LocalDate to) {
         super(description);
         this.from = from;
         this.to = to;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toDataString() {
         return "E | " + (isDone ? "1" : "0") + " | " + description + " | " + from + " | " + to;
     }
 
+    /** Returns the event in its user-facing display format. */
     @Override
     public String toString() {
         return "[E]" + super.toString() + " (from: " + from.format(DISPLAY_FORMAT)
