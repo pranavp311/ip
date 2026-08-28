@@ -1,3 +1,5 @@
+package kopi;
+
 /**
  * Represents an error caused by an invalid command from the user.
  */
