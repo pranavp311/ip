@@ -43,6 +43,7 @@ public class Kopi {
                 Command command = parser.parseCommand(input);
                 ui.showResponse(execute(command, input));
                 if (command == Command.BYE) {
+                    ui.showLine();
                     return;
                 }
             } catch (KopiException e) {
