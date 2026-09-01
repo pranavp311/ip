@@ -42,59 +42,66 @@ public class Ui {
         showLine();
     }
 
-    /** Shows Kopi's farewell. */
-    public void showGoodbye() {
-        output.println("Bye. Hope to see you again soon!");
-        showLine();
+    /** Returns Kopi's farewell. */
+    public String getGoodbye() {
+        return "Bye. Hope to see you again soon!";
     }
 
-    /** Shows all tasks with one-based numbering. */
-    public void showTaskList(TaskList tasks) {
-        output.println("Here are the tasks in your list:");
-        for (int i = 0; i < tasks.size(); i++) {
-            output.printf("%d. %s%n", i + 1, tasks.get(i));
-        }
+    /** Returns all tasks with one-based numbering. */
+    public String getTaskList(TaskList tasks) {
+        return getNumberedTasks("Here are the tasks in your list:", tasks.getAll());
     }
 
-    /** Shows tasks that match a search keyword. */
-    public void showMatches(List<Task> matches) {
-        output.println("Here are the matching tasks in your list:");
-        for (int i = 0; i < matches.size(); i++) {
-            output.printf("%d. %s%n", i + 1, matches.get(i));
-        }
+    /** Returns tasks that match a search keyword. */
+    public String getMatches(List<Task> matches) {
+        return getNumberedTasks("Here are the matching tasks in your list:", matches);
     }
 
-    /** Shows that a task was marked complete. */
-    public void showMarked(Task task) {
-        output.println("Nice! I've marked this task as done:");
-        output.println("  " + task);
+    /** Returns a message confirming that a task was marked complete. */
+    public String getMarked(Task task) {
+        return "Nice! I've marked this task as done:" + System.lineSeparator() + "  " + task;
     }
 
-    /** Shows that a task was marked incomplete. */
-    public void showUnmarked(Task task) {
-        output.println("OK, I've marked this task as not done yet:");
-        output.println("  " + task);
+    /** Returns a message confirming that a task was marked incomplete. */
+    public String getUnmarked(Task task) {
+        return "OK, I've marked this task as not done yet:" + System.lineSeparator() + "  " + task;
     }
 
-    /** Shows that a task was deleted. */
-    public void showDeleted(Task task, int remainingCount) {
-        output.println("Noted. I've removed this task:");
-        output.println("  " + task);
-        output.println("Now you have " + remainingCount + " tasks in the list.");
+    /** Returns a message confirming that a task was deleted. */
+    public String getDeleted(Task task, int remainingCount) {
+        return "Noted. I've removed this task:" + System.lineSeparator()
+                + "  " + task + System.lineSeparator()
+                + "Now you have " + remainingCount + " tasks in the list.";
     }
 
-    /** Shows that a task was added. */
-    public void showAdded(Task task) {
-        output.println("added: " + task);
+    /** Returns a message confirming that a task was added. */
+    public String getAdded(Task task) {
+        return "added: " + task;
     }
 
-    /** Shows an error message. */
-    public void showError(String message) {
-        output.println("OOPS!!! " + message);
+    /** Returns a user-facing error message. */
+    public String getError(String message) {
+        return "OOPS!!! " + message;
+    }
+
+    /** Prints one complete response. */
+    public void showResponse(String response) {
+        output.println(response);
     }
 
     /** Shows a divider line. */
     public void showLine() {
         output.println(LINE);
+    }
+
+    private String getNumberedTasks(String heading, List<Task> tasks) {
+        StringBuilder response = new StringBuilder(heading);
+        for (int i = 0; i < tasks.size(); i++) {
+            response.append(System.lineSeparator())
+                    .append(i + 1)
+                    .append(". ")
+                    .append(tasks.get(i));
+        }
+        return response.toString();
     }
 }

@@ -22,6 +22,7 @@ public class MainWindow extends AnchorPane {
 
     private final Image userImage = new Image(getClass().getResourceAsStream("/images/User.png"));
     private final Image kopiImage = new Image(getClass().getResourceAsStream("/images/Kopi.png"));
+    private Kopi kopi;
 
     @FXML
     private void initialize() {
@@ -31,16 +32,32 @@ public class MainWindow extends AnchorPane {
         Platform.runLater(userInput::requestFocus);
     }
 
+    /** Supplies the application that handles commands. */
+    public void setKopi(Kopi kopi) {
+        this.kopi = kopi;
+        if (kopi.getStartupMessage() != null) {
+            dialogContainer.getChildren().add(
+                    DialogBox.getKopiDialog(kopi.getStartupMessage(), kopiImage));
+        }
+    }
+
     @FXML
     private void handleUserInput() {
         String input = userInput.getText();
+        String response = kopi.getResponse(input);
         if (input.isBlank()) {
+            dialogContainer.getChildren().add(DialogBox.getKopiDialog(response, kopiImage));
+            userInput.clear();
             return;
         }
 
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getKopiDialog("Kopi heard: " + input, kopiImage));
+                DialogBox.getKopiDialog(response, kopiImage));
         userInput.clear();
+        if (kopi.isExitCommand(input)) {
+            userInput.setDisable(true);
+            sendButton.setDisable(true);
+        }
     }
 }
