@@ -35,11 +35,7 @@ public class Ui {
 
     /** Shows Kopi's greeting. */
     public void showWelcome() {
-        showLine();
-        output.println(BANNER);
-        output.println("Hello! I'm Kopi.");
-        output.println("What can I do for you?");
-        showLine();
+        showLines(LINE, BANNER, "Hello! I'm Kopi.", "What can I do for you?", LINE);
     }
 
     /** Returns Kopi's farewell. */
@@ -86,12 +82,12 @@ public class Ui {
 
     /** Prints one complete response. */
     public void showResponse(String response) {
-        output.println(response);
+        showLines(response);
     }
 
     /** Shows a divider line. */
     public void showLine() {
-        output.println(LINE);
+        showLines(LINE);
     }
 
     private String getNumberedTasks(String heading, List<Task> tasks) {
@@ -103,5 +99,11 @@ public class Ui {
                     .append(tasks.get(i));
         }
         return response.toString();
+    }
+
+    private void showLines(String... lines) {
+        for (String line : lines) {
+            output.println(line);
+        }
     }
 }
