@@ -25,18 +25,16 @@ class ParserTest {
 
     @Test
     void parseTask_invalidDate_exceptionThrown() {
-        KopiException exception = assertThrows(
-                KopiException.class,
-                () -> parser.parseTask("deadline return book /by Sunday", Command.DEADLINE));
+        KopiException exception = assertThrows(KopiException.class, () ->
+                parser.parseTask("deadline return book /by Sunday", Command.DEADLINE));
 
         assertEquals("Use dates in yyyy-MM-dd format.", exception.getMessage());
     }
 
     @Test
     void parseTask_missingDescription_exceptionThrown() {
-        KopiException exception = assertThrows(
-                KopiException.class,
-                () -> parser.parseTask("todo", Command.TODO));
+        KopiException exception = assertThrows(KopiException.class, () ->
+                parser.parseTask("todo", Command.TODO));
 
         assertEquals("A todo needs a description.", exception.getMessage());
     }
