@@ -35,6 +35,13 @@ public abstract class Task {
         return description;
     }
 
+    /** Returns whether another task has the same type and user-supplied details. */
+    public boolean hasSameDetails(Task other) {
+        return other != null
+                && getClass() == other.getClass()
+                && description.equalsIgnoreCase(other.description);
+    }
+
     /** Returns this task in the format used by the data file. */
     public abstract String toDataString();
 
