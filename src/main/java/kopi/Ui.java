@@ -3,6 +3,8 @@ package kopi;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /** Handles all console input and output. */
 public class Ui {
@@ -91,14 +93,13 @@ public class Ui {
     }
 
     private String getNumberedTasks(String heading, List<Task> tasks) {
-        StringBuilder response = new StringBuilder(heading);
-        for (int i = 0; i < tasks.size(); i++) {
-            response.append(System.lineSeparator())
-                    .append(i + 1)
-                    .append(". ")
-                    .append(tasks.get(i));
+        String numberedTasks = IntStream.range(0, tasks.size())
+                .mapToObj(index -> (index + 1) + ". " + tasks.get(index))
+                .collect(Collectors.joining(System.lineSeparator()));
+        if (numberedTasks.isEmpty()) {
+            return heading;
         }
-        return response.toString();
+        return heading + System.lineSeparator() + numberedTasks;
     }
 
     private void showLines(String... lines) {
