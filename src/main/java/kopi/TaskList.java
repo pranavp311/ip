@@ -15,6 +15,9 @@ public class TaskList {
 
     /** Creates a task list containing the supplied tasks. */
     public TaskList(List<Task> tasks) {
+        assert tasks != null : "A task list cannot be created from null";
+        assert tasks.stream().noneMatch(task -> task == null)
+                : "A task list cannot contain null tasks";
         this.tasks = new ArrayList<>(tasks);
     }
 

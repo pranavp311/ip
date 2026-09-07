@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,13 @@ class TaskListTest {
         assertThrows(AssertionError.class, () -> tasks.add(null));
         assertThrows(AssertionError.class, () -> tasks.get(1));
         assertThrows(AssertionError.class, () -> tasks.delete(-1));
+    }
+
+    @Test
+    void constructor_invalidTaskCollections_assertionThrown() {
+        assertThrows(AssertionError.class, () -> new TaskList(null));
+        assertThrows(AssertionError.class, () -> new TaskList(
+                Arrays.asList(new Todo("read book"), null)));
     }
 
     @Test

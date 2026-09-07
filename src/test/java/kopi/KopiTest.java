@@ -52,15 +52,18 @@ class KopiTest {
     }
 
     @Test
-    void getResponse_duplicateTask_errorReturnedAndListUnchanged() {
-        Kopi kopi = new Kopi(tempDirectory.resolve("kopi.txt"));
-        kopi.getResponse("todo read book");
+    void getResponse_persistedCompletedDuplicate_errorReturnedAndListUnchanged() {
+        Path dataPath = tempDirectory.resolve("kopi.txt");
+        Kopi firstKopi = new Kopi(dataPath);
+        firstKopi.getResponse("todo read book");
+        firstKopi.getResponse("mark 1");
 
-        String duplicateResponse = kopi.getResponse("todo READ BOOK");
-        String taskList = kopi.getResponse("list");
+        Kopi secondKopi = new Kopi(dataPath);
+        String duplicateResponse = secondKopi.getResponse("todo READ BOOK");
+        String taskList = secondKopi.getResponse("list");
 
         assertEquals("OOPS!!! That task is already in the list.", duplicateResponse);
-        assertTrue(taskList.contains("1. [T][ ] read book"));
+        assertTrue(taskList.contains("1. [T][X] read book"));
         assertFalse(taskList.contains("2. [T]"));
     }
 }
