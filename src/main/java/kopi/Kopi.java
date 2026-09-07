@@ -88,32 +88,50 @@ public class Kopi {
                 String keyword = parser.parseKeyword(input, "find");
                 return ui.getMatches(tasks.find(keyword));
             case MARK:
-                int markIndex = parser.parseTaskNumber(input, "mark", tasks.size());
-                tasks.get(markIndex).markAsDone();
-                storage.save(tasks.getAll());
-                return ui.getMarked(tasks.get(markIndex));
+                return markTask(input);
             case UNMARK:
-                int unmarkIndex = parser.parseTaskNumber(input, "unmark", tasks.size());
-                tasks.get(unmarkIndex).markAsNotDone();
-                storage.save(tasks.getAll());
-                return ui.getUnmarked(tasks.get(unmarkIndex));
+                return unmarkTask(input);
             case DELETE:
-                int deleteIndex = parser.parseTaskNumber(input, "delete", tasks.size());
-                Task removedTask = tasks.delete(deleteIndex);
-                storage.save(tasks.getAll());
-                return ui.getDeleted(removedTask, tasks.size());
+                return deleteTask(input);
             case TODO:
                 // Fallthrough
             case DEADLINE:
                 // Fallthrough
             case EVENT:
-                Task task = parser.parseTask(input, command);
-                tasks.add(task);
-                storage.save(tasks.getAll());
-                return ui.getAdded(task);
+                return addTask(input, command);
             default:
                 throw new KopiException("I don't understand that command.");
         }
+    }
+
+    private String markTask(String input) throws KopiException {
+        int index = parser.parseTaskNumber(input, "mark", tasks.size());
+        Task task = tasks.get(index);
+        task.markAsDone();
+        storage.save(tasks.getAll());
+        return ui.getMarked(task);
+    }
+
+    private String unmarkTask(String input) throws KopiException {
+        int index = parser.parseTaskNumber(input, "unmark", tasks.size());
+        Task task = tasks.get(index);
+        task.markAsNotDone();
+        storage.save(tasks.getAll());
+        return ui.getUnmarked(task);
+    }
+
+    private String deleteTask(String input) throws KopiException {
+        int index = parser.parseTaskNumber(input, "delete", tasks.size());
+        Task removedTask = tasks.delete(index);
+        storage.save(tasks.getAll());
+        return ui.getDeleted(removedTask, tasks.size());
+    }
+
+    private String addTask(String input, Command command) throws KopiException {
+        Task task = parser.parseTask(input, command);
+        tasks.add(task);
+        storage.save(tasks.getAll());
+        return ui.getAdded(task);
     }
 
     /** Starts Kopi using its default data file. */
