@@ -20,16 +20,19 @@ public class TaskList {
 
     /** Adds a task to the end of the list. */
     public void add(Task task) {
+        assert task != null : "A task list cannot contain null tasks";
         tasks.add(task);
     }
 
     /** Returns the task at the given zero-based index. */
     public Task get(int index) {
+        assert isValidIndex(index) : "Task index must be within the list";
         return tasks.get(index);
     }
 
     /** Removes and returns the task at the given zero-based index. */
     public Task delete(int index) {
+        assert isValidIndex(index) : "Task index must be within the list";
         return tasks.remove(index);
     }
 
@@ -49,5 +52,9 @@ public class TaskList {
         return tasks.stream()
                 .filter(task -> task.getDescription().toLowerCase(Locale.ROOT).contains(normalizedKeyword))
                 .toList();
+    }
+
+    private boolean isValidIndex(int index) {
+        return index >= 0 && index < tasks.size();
     }
 }
