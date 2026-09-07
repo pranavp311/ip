@@ -20,6 +20,14 @@ public class Event extends Task {
 
     /** {@inheritDoc} */
     @Override
+    public boolean hasSameDetails(Task other) {
+        return super.hasSameDetails(other)
+                && from.equals(((Event) other).from)
+                && to.equals(((Event) other).to);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public String toDataString() {
         return "E | " + (isDone ? "1" : "0") + " | " + description + " | " + from + " | " + to;
     }

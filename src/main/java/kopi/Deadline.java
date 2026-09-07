@@ -18,6 +18,12 @@ public class Deadline extends Task {
 
     /** {@inheritDoc} */
     @Override
+    public boolean hasSameDetails(Task other) {
+        return super.hasSameDetails(other) && by.equals(((Deadline) other).by);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public String toDataString() {
         return "D | " + (isDone ? "1" : "0") + " | " + description + " | " + by;
     }

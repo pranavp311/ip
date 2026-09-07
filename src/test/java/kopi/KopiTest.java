@@ -50,4 +50,17 @@ class KopiTest {
 
         assertTrue(secondKopi.getResponse("list").contains("persist this task"));
     }
+
+    @Test
+    void getResponse_duplicateTask_errorReturnedAndListUnchanged() {
+        Kopi kopi = new Kopi(tempDirectory.resolve("kopi.txt"));
+        kopi.getResponse("todo read book");
+
+        String duplicateResponse = kopi.getResponse("todo READ BOOK");
+        String taskList = kopi.getResponse("list");
+
+        assertEquals("OOPS!!! That task is already in the list.", duplicateResponse);
+        assertTrue(taskList.contains("1. [T][ ] read book"));
+        assertFalse(taskList.contains("2. [T]"));
+    }
 }

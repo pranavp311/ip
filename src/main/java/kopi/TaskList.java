@@ -46,6 +46,12 @@ public class TaskList {
         return List.copyOf(tasks);
     }
 
+    /** Returns whether the list contains a task with the same details. */
+    public boolean hasDuplicateOf(Task candidate) {
+        assert candidate != null : "A duplicate candidate cannot be null";
+        return tasks.stream().anyMatch(task -> task.hasSameDetails(candidate));
+    }
+
     /** Returns tasks whose descriptions contain the keyword, ignoring case. */
     public List<Task> find(String keyword) {
         String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);

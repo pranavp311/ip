@@ -11,3 +11,4 @@ The test checks that Kopi can:
 5. Save tasks and load them again in a later session.
 6. Parse valid dates and reject dates in an unsupported format.
 7. Find tasks by a case-insensitive description keyword.
+8. Reject duplicate tasks without changing the task list.

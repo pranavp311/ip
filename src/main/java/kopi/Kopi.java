@@ -129,6 +129,9 @@ public class Kopi {
 
     private String addTask(String input, Command command) throws KopiException {
         Task task = parser.parseTask(input, command);
+        if (tasks.hasDuplicateOf(task)) {
+            throw new KopiException("That task is already in the list.");
+        }
         tasks.add(task);
         storage.save(tasks.getAll());
         return ui.getAdded(task);
