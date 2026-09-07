@@ -1,6 +1,7 @@
 package kopi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
@@ -24,5 +25,14 @@ class TaskListTest {
         TaskList tasks = new TaskList(List.of(new Todo("read book")));
 
         assertEquals(List.of(), tasks.find("meeting"));
+    }
+
+    @Test
+    void taskOperations_invalidArguments_assertionThrown() {
+        TaskList tasks = new TaskList(List.of(new Todo("read book")));
+
+        assertThrows(AssertionError.class, () -> tasks.add(null));
+        assertThrows(AssertionError.class, () -> tasks.get(1));
+        assertThrows(AssertionError.class, () -> tasks.delete(-1));
     }
 }
